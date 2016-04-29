@@ -1,0 +1,15 @@
+Metrics/LineLength:
+  Max: 200
+Documentation:
+    Enabled: false
+ModuleLength:
+    Enabled: false
+ClassLength:
+    Enabled: false
+Style/RaiseArgs:
+  Enabled: false
+MethodLength:
+  Max: 15
+AllCops:
+  Exclude:
+    - 'lib/journey/utils/string_utils.rb'
