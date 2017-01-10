@@ -24,7 +24,12 @@ module Jimmy
 
       entry.merge!(collect_stats_from(sampler_instances))
         .merge!(attributes_for_env(env))
-        .merge!(attributes_for_response(response))
+
+      if response.is_a?(Exception)
+        entry.error(response)
+      else
+        entry.merge!(attributes_for_response(response))
+      end
 
       log_writer.write(filter_attributes(entry))
 
@@ -78,7 +83,6 @@ module Jimmy
     end
 
     def attributes_for_response(response)
-      return attributes_for_error(response) if response.is_a?(Exception)
       response_code, response_headers, response_body = *response
       request_id = response_headers['X-Request-Id']
 
@@ -88,15 +92,6 @@ module Jimmy
       attributes.merge!(request_id: request_id) if request_id.present?
 
       attributes
-    end
-
-    def attributes_for_error(error)
-      {
-        response_code: '500',
-        error_class: error.class.name,
-        error_message: error.message,
-        error_backtrace: error.backtrace.join("\n"),
-      }
     end
 
     def samplers
