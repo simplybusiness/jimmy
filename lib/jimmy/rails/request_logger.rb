@@ -54,6 +54,9 @@ module Jimmy
           s.connect '64.233.187.99', 1 # Google's IP, which won't be hit anyway
           s.addr.last.chomp
         end
+      rescue Errno::ENETUNREACH
+        raise unless ::Rails.env.test?
+        "127.0.0.1"
       ensure
         Socket.do_not_reverse_lookup = orig
       end
