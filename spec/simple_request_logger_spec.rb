@@ -73,7 +73,7 @@ describe Jimmy::SimpleRequestLogger do
       end
 
       it 'logs the error' do
-        expect { json }.to raise_error
+        expect { json }.to raise_error(ArgumentError, 'Something went wrong!')
         json = JSON.parse(middleware.stream.string.lines.first)
 
         expect(json['response_code']).to eq '500'
@@ -242,13 +242,13 @@ describe Jimmy::SimpleRequestLogger do
       let(:json) { JSON.parse(middleware.stream.string.lines.first) }
 
       it 'is invoked with the attribute hash each time a log entry is made' do
-        middleware.should_receive(:filter_attributes).and_call_original
+        expect(middleware).to receive(:filter_attributes).and_call_original
         middleware.call('PATH_INFO' => '/gggg/')
       end
 
       context 'without specify any sampler' do
         it 'allows log parameters to be transformed or deleted before writing' do
-          middleware.should_receive(:filter_attributes) do |attr|
+          expect(middleware).to receive(:filter_attributes) do |attr|
             { how_many_entries: attr.keys.length }
           end
           middleware.call('PATH_INFO' => '/gggg/')
@@ -265,7 +265,7 @@ describe Jimmy::SimpleRequestLogger do
         end
 
         it 'allows log parameters to be transformed or deleted before writing' do
-          middleware.should_receive(:filter_attributes) do |attr|
+          expect(middleware).to receive(:filter_attributes) do |attr|
             { how_many_entries: attr.keys.length }
           end
           middleware.call('PATH_INFO' => '/gggg/')

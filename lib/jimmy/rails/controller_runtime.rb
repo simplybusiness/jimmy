@@ -4,7 +4,7 @@ module Jimmy
       extend ActiveSupport::Concern
 
       included do
-        before_filter :log_controller_and_action
+        before_action :log_controller_and_action
       end
 
       protected
