@@ -104,7 +104,7 @@ If you have many nodes in a cluster, you can merge logs from them using standard
 
 Use `gem-release` to maintain versions https://github.com/svenfuchs/gem-release.
 
-To update the minor version (e.g. 0.0.1 to 0.0.2), after merging the PR to `master` run:
+To update the patch version (e.g. 0.0.1 to 0.0.2), after merging the PR to `master` run:
 
 ```
 gem bump --tag --release
