@@ -56,7 +56,7 @@ module Jimmy
         end
       rescue Errno::ENETUNREACH
         raise unless ::Rails.env.test?
-        "127.0.0.1"
+        '127.0.0.1'
       ensure
         Socket.do_not_reverse_lookup = orig
       end
