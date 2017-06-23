@@ -1,20 +1,12 @@
 module Jimmy
   class Entry < Hash
 
+    def initialize(error_formatter: nil)
+      @error_formatter = error_formatter || RubyErrorFormatter.new
+    end
+
     def error(error)
-      self.merge!(attributes_for_error(error))
+      self.merge!(@error_formatter.attributes_for_error(error))
     end
-
-    private
-
-    def attributes_for_error(error)
-      {
-          response_code: '500',
-          error_class: error.class.name,
-          error_message: error.message,
-          error_backtrace: error.backtrace.join("\n"),
-      }
-    end
-
   end
 end

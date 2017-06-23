@@ -5,13 +5,19 @@ module Jimmy
     class Logger
       include Singleton
 
-      def log(hash)
-        entry = Entry.new
-        entry.merge!(collect_stats_from(sampler_instances)).merge!(hash)
+      def log(hash, error = nil)
+        raise(ArgumentError) if error && !(error.is_a? Exception)
+        entry = entry(hash)
+        entry.error(error) if error
         log_writer.write(entry)
       end
 
       private
+
+      def entry(hash)
+         Entry.new(error_formatter: Entry::RubyErrorFormatter.new).
+           merge!(collect_stats_from(sampler_instances)).merge!(hash)
+      end
 
       def log_writer
         @writer ||= Writer.new(Jimmy.configuration.logger_stream)

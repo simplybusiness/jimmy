@@ -14,7 +14,7 @@ module Jimmy
 
     def call(env)
       sampler_instances = samplers.map(&:new)
-      entry = Jimmy::Entry.new
+      entry = Jimmy::Entry.new(error_formatter: Entry::RailsErrorFormatter.new)
 
       response = begin
         @next_app.call(env.merge('sb.simple_request_logger.entry' => entry))
