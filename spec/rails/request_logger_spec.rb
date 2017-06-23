@@ -11,6 +11,7 @@ describe Jimmy::Rails::RequestLogger do
 
   before do
     stub_const('Rails', rails)
+    Jimmy.remove_instance_variable(:@configuration) if Jimmy.instance_variable_defined?(:@configuration)
   end
 
   describe '#stream' do
@@ -22,10 +23,26 @@ describe Jimmy::Rails::RequestLogger do
 
     subject { described_class.new(app).stream }
 
-    it 'returns the correct stream' do
-      expect(subject.class).to eq(File)
-      expected_log_dir = tmp_directory + 'log' + (Rails.env + '_json.log')
-      expect(subject.path).to eq(expected_log_dir.to_s)
+    context "without file_path configuration" do
+      it 'returns the default stream' do
+        expect(subject.class).to eq(File)
+        expected_log_dir = ::Rails.root + 'log' + (::Rails.env + '_json.log')
+        expect(subject.path).to eq(expected_log_dir.to_s)
+      end
+    end
+
+    context "with file_path configuration" do
+      before do
+        Jimmy.configure do |config|
+          config.file_path = ::Rails.root + 'log' + 'testing_json.log'
+        end
+      end
+
+      it 'returns the correct stream' do
+        expect(subject.class).to eq(File)
+        expected_log_dir = ::Rails.root + 'log' + 'testing_json.log'
+        expect(subject.path).to eq(expected_log_dir.to_s)
+      end
     end
   end
 

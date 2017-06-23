@@ -15,7 +15,7 @@ module Jimmy
     yield(configuration)
   end
 
- def self.configuration
+  def self.configuration
     @configuration ||= Configuration.new
   end
 end

@@ -4,13 +4,7 @@ module Jimmy
   module Rails
     class RequestLogger < SimpleRequestLogger
       def stream
-        @stream ||=
-          begin
-            file_name = ::Rails.root + 'log' + (::Rails.env + '_json.log')
-            File.open(file_name, 'a').tap do |file|
-              file.sync = true
-            end
-          end
+        Jimmy.configuration.logger_stream
       end
 
       def local_address
