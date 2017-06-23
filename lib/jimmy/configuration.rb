@@ -18,6 +18,10 @@ module Jimmy
       end
     end
 
+    def logger_stream=(stream)
+      @logger_stream = stream
+    end
+
     private
 
     def default_file_path

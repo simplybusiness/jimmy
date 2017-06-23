@@ -7,6 +7,7 @@ require 'jimmy/samplers/sampler'
 require 'jimmy/samplers/time'
 require 'jimmy/samplers/memory'
 require 'jimmy/simple_request_logger'
+require 'jimmy/ruby/logger'
 require 'jimmy/rails/request_logger'
 require 'jimmy/rails/controller_runtime'
 
