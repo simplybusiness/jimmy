@@ -1,8 +1,5 @@
 module Jimmy
   class Entry < Hash
-    def <<(hash)
-      self.merge!(hash)
-    end
 
     def error(error)
       self.merge!(attributes_for_error(error))
