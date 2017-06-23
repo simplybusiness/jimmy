@@ -27,7 +27,7 @@ describe Jimmy::SimpleRequestLogger do
       # available from Time::now, so if we're not careful here it can
       # appear to have run in the past.
       middleware.call(env)
-      JSON.parse(middleware.stream.string.lines.first)
+      JSON.parse(middleware.stream.string.lines.last)
     end
 
     it 'starts with current time' do
@@ -74,7 +74,7 @@ describe Jimmy::SimpleRequestLogger do
 
       it 'logs the error' do
         expect { json }.to raise_error(ArgumentError, 'Something went wrong!')
-        json = JSON.parse(middleware.stream.string.lines.first)
+        json = JSON.parse(middleware.stream.string.lines.last)
 
         expect(json['response_code']).to eq '500'
         expect(json['error_class']).to eq 'ArgumentError'
@@ -227,7 +227,7 @@ describe Jimmy::SimpleRequestLogger do
     end
     middleware = MyLogger.new(app)
     middleware.call('PATH_INFO' => '/gggg/')
-    json = JSON.parse(middleware.stream.string.lines.first)
+    json = JSON.parse(middleware.stream.string.lines.last)
     expect(json['my_key']).to eq('forty two')
   end
 
@@ -239,7 +239,7 @@ describe Jimmy::SimpleRequestLogger do
         end
         MyLogger.new(app)
       end
-      let(:json) { JSON.parse(middleware.stream.string.lines.first) }
+      let(:json) { JSON.parse(middleware.stream.string.lines.last) }
 
       it 'is invoked with the attribute hash each time a log entry is made' do
         expect(middleware).to receive(:filter_attributes).and_call_original
