@@ -2,7 +2,6 @@ module Jimmy
   class Configuration
 
     attr_accessor :samplers
-    attr_reader :logger_stream
 
     def file_path
       @file_path || default_file_path
