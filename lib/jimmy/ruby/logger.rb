@@ -7,14 +7,14 @@ module Jimmy
 
       def log(hash, error = nil)
         raise(ArgumentError) if error && !(error.is_a? Exception)
-        entry = entry(hash)
+        entry = log_entry(hash)
         entry.error(error) if error
         log_writer.write(entry)
       end
 
       private
 
-      def entry(hash)
+      def log_entry(hash)
          Entry.new(error_formatter: Entry::RubyErrorFormatter.new).
            merge!(collect_stats_from(sampler_instances)).merge!(hash)
       end
