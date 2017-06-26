@@ -2,11 +2,14 @@ require 'active_support/all'
 require 'jimmy/version'
 require 'jimmy/configuration'
 require 'jimmy/log_entry'
+require 'jimmy/log_entry/ruby_error_formatter'
+require 'jimmy/log_entry/rails_error_formatter'
 require 'jimmy/writer'
 require 'jimmy/samplers/sampler'
 require 'jimmy/samplers/time'
 require 'jimmy/samplers/memory'
 require 'jimmy/simple_request_logger'
+require 'jimmy/ruby/logger'
 require 'jimmy/rails/request_logger'
 require 'jimmy/rails/controller_runtime'
 
@@ -15,7 +18,7 @@ module Jimmy
     yield(configuration)
   end
 
- def self.configuration
+  def self.configuration
     @configuration ||= Configuration.new
   end
 end
