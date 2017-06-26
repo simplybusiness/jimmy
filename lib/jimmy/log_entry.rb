@@ -1,5 +1,8 @@
 module Jimmy
   class Entry < Hash
+    def <<(hash)
+      self.merge!(hash)
+    end
 
     def initialize(error_formatter: nil)
       @error_formatter = error_formatter || RubyErrorFormatter.new

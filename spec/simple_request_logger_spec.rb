@@ -222,7 +222,7 @@ describe Jimmy::SimpleRequestLogger do
 
   it 'allows subsequent middlewares or apps to append to the log entry' do
     app = proc do|env|
-      env['sb.simple_request_logger.entry'].merge!({ my_key: 'forty two' })
+      env['sb.simple_request_logger.entry'] << { my_key: 'forty two' }
       [200, { 'Content-Type' => 'text/html' }, %w(hi there)]
     end
     middleware = MyLogger.new(app)
