@@ -1,7 +1,7 @@
 module Jimmy
   class Entry < Hash
     def <<(hash)
-      self.merge!(hash)
+      self.merge!(hash.try(:to_unsafe_h) || hash)
     end
 
     def initialize(error_formatter: nil)
