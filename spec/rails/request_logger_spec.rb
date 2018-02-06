@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 require 'socket'
-
 describe Jimmy::Rails::RequestLogger do
   let(:app) { double(:app) }
 
