@@ -35,10 +35,18 @@ module Jimmy
 
       def filter_attributes(attributes)
         @filter ||= ActionDispatch::Http::ParameterFilter.new(::Rails.application.config.filter_parameters)
-        @filter.filter attributes
+        filtered_keys = @filter.filter attributes
+        filter_uri_query(filtered_keys)
       end
 
       private
+
+      def filter_uri_query(filtered_keys)
+        ::Rails.application.config.filter_parameters.each do |matcher|
+          filtered_keys[:uri].gsub!(Regexp.new(matcher.to_s + '[^&]+'), "#{matcher}=[FILTERED]")
+        end
+        filtered_keys
+      end
 
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
       def determine_local_ip
