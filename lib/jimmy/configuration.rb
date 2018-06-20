@@ -21,6 +21,14 @@ module Jimmy
       @logger_stream = stream
     end
 
+    def filter_uri=(filter_uri)
+      @filter_uri = filter_uri
+    end
+
+    def filter_uri
+      @filter_uri || false
+    end
+
     private
 
     def default_file_path
