@@ -53,6 +53,24 @@ end
 
 As default the only active sampler is `Jimmy::Samplers::Time`
 
+## Configuration
+
+Various configuration options are provided when setting up Jimmy in your Rails application
+
+#### filter_uri
+
+Defaults to `false`. Can be configured in your Rails application's Jimmy initializer with `config.filter_uri = true`. If set to true,
+Jimmy will filter any `Rails.application.config.filter_parameters` from the URI query string as well as the query params.
+
+#### logger_stream
+
+Can be used to specify the stream used for the logging output in your Jimmy initializer eg. `config.logger_stream = STDOUT`. Will default
+to using the `#file_path` as defined below.
+
+#### file_path
+
+Set the file path of the log output file via `config.file_path = path/to/file.log`. Path will default to `::Rails.root + 'log' + (::Rails.env + '_json.log')`
+
 ## Using the logs
 
 ### Searching and filtering
