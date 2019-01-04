@@ -79,6 +79,10 @@ module Jimmy
       # using a proxy and don't have that middleware
       attributes.merge!(request_id: request_id) if request_id
 
+      # X-Amzn-Trace-Id is present for request incoming from Amazon ELB
+      # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
+      attributes.merge!(x_amzn_trace_id: env['HTTP_X_AMZN_TRACE_ID']) if env['HTTP_X_AMZN_TRACE_ID']
+
       attributes
     end
 
