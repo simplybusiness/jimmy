@@ -87,7 +87,7 @@ module Jimmy
       # proxies. The trust score 
       attributes.merge!(true_client_ip: env['HTTP_TRUE_CLIENT_IP']) if env['HTTP_TRUE_CLIENT_IP']
       attributes.merge!(cflare_trust_score: env['HTTP_CF_TRUST_SCORE']) if env['HTTP_CF_TRUST_SCORE']
-      attributes.MERGE!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
+      attributes.merge!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
 
       attributes
     end
