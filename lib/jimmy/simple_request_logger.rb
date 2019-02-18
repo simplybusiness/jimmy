@@ -83,8 +83,11 @@ module Jimmy
       # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
       attributes.merge!(x_amzn_trace_id: env['HTTP_X_AMZN_TRACE_ID']) if env['HTTP_X_AMZN_TRACE_ID']
       
-      # Cloudflare adds the true client ip header to help differnatite from
-      # proxies. The trust score 
+      # Cloudflare adds the true client ip header to help differentiate from
+      # proxies. The trust score is provided as an indicator for malicous
+      # activity. While traffic can bypass Cloudflare I have added the
+      # x-forwarded-for header in so we can view and block clients that by pass
+      # the service.
       attributes.merge!(true_client_ip: env['HTTP_TRUE_CLIENT_IP']) if env['HTTP_TRUE_CLIENT_IP']
       attributes.merge!(cflare_trust_score: env['HTTP_CF_TRUST_SCORE']) if env['HTTP_CF_TRUST_SCORE']
       attributes.merge!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
