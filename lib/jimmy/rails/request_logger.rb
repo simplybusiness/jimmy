@@ -24,7 +24,7 @@ module Jimmy
         dummy_handler = proc do |request_env|
           [204, { 'ip' => request_env['action_dispatch.remote_ip'].to_s }]
         end
-        _, addr = ActionDispatch::RemoteIp.new(dummy_handler).call(env)
+        _, addr = ActionDispatch::RemoteIp.new(dummy_handler, ip_spoofing_check: false).call(env)
         addr.fetch('ip', '(unknown)')
       end
 
