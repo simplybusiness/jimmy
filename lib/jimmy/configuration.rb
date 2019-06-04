@@ -29,6 +29,14 @@ module Jimmy
       @filter_uri || false
     end
 
+    def ip_spoofing_check
+      @ip_spoofing_check || false
+    end
+
+    def ip_spoofing_check=(ip_spoofing_check)
+      @ip_spoofing_check = ip_spoofing_check
+    end
+
     private
 
     def default_file_path
