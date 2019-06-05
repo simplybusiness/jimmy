@@ -112,7 +112,7 @@ If you have many nodes in a cluster, you can merge logs from them using standard
 
 ## Using the Ruby logger
 
-You can trigger a logger "manually" by using `Ruby::Logger`. It uses the same configuration as the middleware logger.
+You can trigger a logger "manually" by using [Ruby::Logger](https://github.com/simplybusiness/jimmy/blob/master/lib/jimmy/ruby/logger.rb). It uses the same configuration as the middleware logger.
 
 Simple usage example:
 
