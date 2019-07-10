@@ -120,13 +120,14 @@ Simple usage example:
 Jimmy::Ruby:Logger.instance.log({message: "Error message"})
 ```
 
-## Releasing
+## Contributing
 
-1. Create your feature branch (`git checkout -b my-new-feature`)
-2. Commit your changes (`git commit -am 'Added some feature'`)
-3. Push to the branch (`git push origin my-new-feature`)
-4. Edit `./lib/jimmy/version.rb` and bump the version
-5. Create new Pull Request
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Edit `./lib/jimmy/version.rb` and bump the version
+6. Create new Pull Request
 
 ## Copyright
 
