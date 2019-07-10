@@ -110,6 +110,16 @@ If you have many nodes in a cluster, you can merge logs from them using standard
 
 * If you need other stuff logged in some context, add your own filters that run in that context.  Simples.
 
+## Using the Ruby logger
+
+You can trigger a logger "manually" by using [Ruby::Logger](https://github.com/simplybusiness/jimmy/blob/master/lib/jimmy/ruby/logger.rb). It uses the same configuration as the middleware logger.
+
+Simple usage example:
+
+```ruby
+Jimmy::Ruby:Logger.instance.log({message: "Error message"})
+```
+
 ## Contributing
 
 1. Fork it
