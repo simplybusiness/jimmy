@@ -92,6 +92,9 @@ module Jimmy
       attributes.merge!(cflare_trust_score: env['HTTP_CF_TRUST_SCORE']) if env['HTTP_CF_TRUST_SCORE']
       attributes.merge!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
 
+      attributes.merge!(user_id: env['USER_ID']) if env['USER_ID']
+      attributes.merge!(external_user_id: env['EXTERNAL_USER_ID']) if env['EXTERNAL_USER_ID']
+
       attributes
     end
 

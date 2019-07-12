@@ -127,6 +127,20 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
+    context 'when EXTERNAL_USER_ID is set by any app that does authentication' do
+      let(:env) { { 'EXTERNAL_USER_ID' => 'abcd-1234' } }
+      it 'is included' do
+        expect(json['external_user_id']).to eq('abcd-1234')
+      end
+    end
+
+    context 'when USER_ID is set by any app that does authentication' do
+      let(:env) { { 'USER_ID' => 'hashedemail' } }
+      it 'is included' do
+        expect(json['user_id']).to eq('hashedemail')
+      end
+    end
+
     context 'for an example GET request' do
       let(:env) do
         {
