@@ -127,17 +127,38 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
-    context 'when EXTERNAL_USER_ID is set by any app that does authentication' do
-      let(:env) { { 'EXTERNAL_USER_ID' => 'abcd-1234' } }
-      it 'is included' do
-        expect(json['external_user_id']).to eq('abcd-1234')
+    context 'when additional context is configured' do
+      before do
+        Jimmy.configure do |config|
+          config.additional_context = ->(env) { { username: env['USERNAME'] } }
+        end
+      end
+      let(:env) { { 'USERNAME' => 'joe.bloggs' } }
+
+      it 'applies additional context to every request' do
+        expect(json['username']).to eq('joe.bloggs')
       end
     end
 
-    context 'when USER_ID is set by any app that does authentication' do
-      let(:env) { { 'USER_ID' => 'hashedemail' } }
-      it 'is included' do
-        expect(json['user_id']).to eq('hashedemail')
+    context 'when the developer makes a mistake in the additional context that throws an error' do
+      before do
+        Jimmy.configure do |config|
+          config.additional_context = ->(env) { { username: env.fetch('USERNAME') } }
+        end
+      end
+      after do
+        Jimmy.configure do |config|
+          config.additional_context = ->(_) { {} }
+        end
+      end
+      let(:env) { {} }
+
+      it 'does not throw an error' do
+        expect { json }.to_not raise_error
+      end
+
+      it 'does not set the key' do
+        expect(json).to_not have_key('username')
       end
     end
 
