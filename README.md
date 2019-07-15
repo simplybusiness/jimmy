@@ -27,8 +27,8 @@ Jimmy is a middleware to store the Rails logs as one entry per request in JSON f
 }
 ```
 
-(Lines in the real log are not split: I added that for markdown)
-Note that the timestamp is always the first entry. so that unix sort(1) can be used to merge logs from nodes in a cluster.
+* Lines in the real log are not split: added for readability
+* Note that the timestamp is always the first entry - unix `sort(1)` can be used to merge logs from nodes in a cluster.
 
 The log is stored in `log/production_json.log`.
 
