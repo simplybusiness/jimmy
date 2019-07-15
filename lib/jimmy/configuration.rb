@@ -1,7 +1,7 @@
 module Jimmy
   class Configuration
     attr_accessor :samplers
-    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check, :additional_context
+    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check
 
     def file_path
       @file_path || default_file_path
@@ -23,6 +23,11 @@ module Jimmy
 
     def additional_context
       @additional_context || ->(_) { {} }
+    end
+
+    def additional_context=(additional_context)
+      raise ArgumentError.new("additional_context has been misconfigured. Please supply an object that responds to #call with a single argument. You supplied a #{additional_context.class}: #{additional_context}") if !additional_context.respond_to?(:call) || !additional_context.parameters.one?
+      @additional_context = additional_context
     end
 
     private
