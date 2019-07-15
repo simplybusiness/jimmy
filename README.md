@@ -1,19 +1,32 @@
 [![Build Status](https://semaphoreci.com/api/v1/projects/1a50e5b7-f96e-4fbe-a7de-7da6feaaeec4/474761/badge.svg)](https://semaphoreci.com/simplybusiness/jimmy)
 
-[![Code Climate](https://codeclimate.com/repos/559a90ab6956802f5b013588/badges/4cd4bb76bd603ced0222/gpa.svg)](https://codeclimate.com/repos/559a90ab6956802f5b013588/feed)
-
 # Jimmy
 
-Jimmy is a middleware to store the Rails logs as one entry per request in JSON format. The log is timestamped, includes request parameters, and may also include application-specific fields such as backoffice username.  Something like this:
+Jimmy is a middleware to store the Rails logs as one entry per request in JSON format.
 
+## Example
+
+```json
+{  
+   "timestamp":"2014-01-24T09:06:59.949Z",
+   "duration":0.617041,
+   "response_code":200,
+   "remote_address":"127.0.0.1",
+   "uri":"/backoffice/?vertical_id=professional",
+   "user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:26.0) Gecko/20100101 Firefox/26.0",
+   "referer":"http://localhost:3000/admin_users/sign_in",
+   "query_params":{  
+      "vertical_id":[  
+         "professional"
+      ]
+   },
+   "request_method":"GET",
+   "controller":"xxxx",
+   "action":"index",
+   "local_address":"10.0.4.195"
+}
 ```
-{"timestamp":"2014-01-24T09:06:59.949Z","duration":0.617041,
- "response_code":200,"remote_address":"127.0.0.1",
- "uri":"/backoffice/?vertical_id=professional","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:26.0) Gecko/20100101 Firefox/26.0","referer":"http://localhost:3000/admin_users/sign_in",
-"query_params":{"vertical_id":["professional"]},
- "request_method":"GET","controller":"xxxx",
- "action":"index","local_address":"10.0.4.195"}
-```
+
 (Lines in the real log are not split: I added that for markdown)
 Note that the timestamp is always the first entry. so that unix sort(1) can be used to merge logs from nodes in a cluster.
 
@@ -38,11 +51,15 @@ bundle
 In order to allow a Rails application to write JSON logs you need to add Jimmy as middleware
 (just after default middleware which captures exception and shows debug screen):
 
-`config.middleware.insert_after ActionDispatch::DebugExceptions, Jimmy::Rails::RequestLogger`
+```ruby
+config.middleware.insert_after ActionDispatch::DebugExceptions, Jimmy::Rails::RequestLogger
+```
 
 It possible configure the samplers to use via a Rails initializer:
 
 ```ruby
+# config/initializers/jimmy.rb
+
 Jimmy.configure do |config|
   config.samplers = [Jimmy::Samplers::Time, Jimmy::Samplers::Memory]
 end
