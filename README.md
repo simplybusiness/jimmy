@@ -29,7 +29,9 @@ gem 'jimmy'
 
 And then execute:
 
-    $ bundle
+```bash
+bundle
+```
 
 ## Usage
 
@@ -40,7 +42,7 @@ In order to allow a Rails application to write JSON logs you need to add Jimmy a
 
 It possible configure the samplers to use via a Rails initializer:
 
-```
+```ruby
 Jimmy.configure do |config|
   config.samplers = [Jimmy::Samplers::Time, Jimmy::Samplers::Memory]
 end
@@ -57,19 +59,32 @@ As default the only active sampler is `Jimmy::Samplers::Time`
 
 Various configuration options are provided when setting up Jimmy in your Rails application
 
-#### filter_uri
+#### `filter_uri`
 
 Defaults to `false`. Can be configured in your Rails application's Jimmy initializer with `config.filter_uri = true`. If set to true,
 Jimmy will filter any `Rails.application.config.filter_parameters` from the URI query string as well as the query params.
 
-#### logger_stream
+#### `logger_stream`
 
 Can be used to specify the stream used for the logging output in your Jimmy initializer eg. `config.logger_stream = STDOUT`. Will default
 to using the `#file_path` as defined below.
 
-#### file_path
+#### `file_path`
 
 Set the file path of the log output file via `config.file_path = path/to/file.log`. Path will default to `::Rails.root + 'log' + (::Rails.env + '_json.log')`
+
+#### `additional_context`
+
+Set additional attributes to be logged. Should be an object that responds to `#call` with one argument - the `env`.
+
+Defaults to `->(_) { {} }`
+
+```ruby
+# Record the username when authenticating using Rack Basic Auth:
+Jimmy.configure do |config|
+  config.additional_context = ->(env) { { username: env['REMOTE_USER'] } }
+end
+```
 
 ## Using the logs
 
