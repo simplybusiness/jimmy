@@ -126,29 +126,8 @@ Jimmy::Ruby:Logger.instance.log({message: "Error message"})
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-## For maintainers
-
-Use `gem-release` to maintain versions https://github.com/svenfuchs/gem-release.
-
-To update the patch version (e.g. 0.0.1 to 0.0.2), after merging the PR to `master` run:
-
-```
-gem bump --tag --release
-```
-
-if instead you want to bump the minor version (e.g. 0.0.1 to 0.1.0):
-
-```
-gem bump --version minor --tag --release
-```
-
-or major version (e.g. 0.0.1 to 1.0.0):
-
-```
-gem bump --version major --tag --release
-```
+5. Edit `./lib/jimmy/version.rb` and bump the version
+6. Create new Pull Request
 
 ## Copyright
 
