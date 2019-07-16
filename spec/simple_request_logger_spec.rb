@@ -182,6 +182,16 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
+    context 'when additional_context is configured to return something thats not a hash' do
+      it 'raises an error that indicates Jimmy has been misconfigured' do
+        expect do
+          Jimmy.configure do |config|
+            config.additional_context = ->(_) { 'not a hash' }
+          end
+        end.to raise_error(ArgumentError)
+      end
+    end
+
     context 'for an example GET request' do
       let(:env) do
         {
