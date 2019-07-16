@@ -92,7 +92,15 @@ module Jimmy
       attributes.merge!(cflare_trust_score: env['HTTP_CF_TRUST_SCORE']) if env['HTTP_CF_TRUST_SCORE']
       attributes.merge!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
 
+      attributes.merge!(additional_context_from(env))
+
       attributes
+    end
+
+    def additional_context_from(env)
+      Jimmy.configuration.additional_context.call(env)
+    rescue StandardError
+      {}
     end
 
     def attributes_for_response(response)
