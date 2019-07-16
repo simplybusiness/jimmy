@@ -7,6 +7,10 @@ module Jimmy
         Jimmy.configuration.logger_stream
       end
 
+      def ip_spoofing_check
+        Jimmy.configuration.ip_spoofing_check
+      end
+
       def local_address
         @local_address ||= determine_local_ip
       end
@@ -24,7 +28,7 @@ module Jimmy
         dummy_handler = proc do |request_env|
           [204, { 'ip' => request_env['action_dispatch.remote_ip'].to_s }]
         end
-        _, addr = ActionDispatch::RemoteIp.new(dummy_handler, ip_spoofing_check: false).call(env)
+        _, addr = ActionDispatch::RemoteIp.new(dummy_handler, ip_spoofing_check).call(env)
         addr.fetch('ip', '(unknown)')
       end
 

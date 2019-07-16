@@ -127,6 +127,71 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
+    context 'when additional context is configured' do
+      before do
+        Jimmy.configure do |config|
+          config.additional_context = ->(env) { { username: env['USERNAME'] } }
+        end
+      end
+      let(:env) { { 'USERNAME' => 'joe.bloggs' } }
+
+      it 'applies additional context to every request' do
+        expect(json['username']).to eq('joe.bloggs')
+      end
+    end
+
+    context 'when the developer makes a mistake in the additional context that throws an error' do
+      before do
+        Jimmy.configure do |config|
+          config.additional_context = ->(env) { { username: env.fetch('USERNAME') } }
+        end
+      end
+      after do
+        Jimmy.configure do |config|
+          config.additional_context = ->(_) { {} }
+        end
+      end
+      let(:env) { {} }
+
+      it 'does not throw an error' do
+        expect { json }.to_not raise_error
+      end
+
+      it 'does not set the key' do
+        expect(json).to_not have_key('username')
+      end
+    end
+
+    context 'when additional_context is configured with an object that does not respond to call' do
+      it 'raises an error that indicates Jimmy has been misconfigured' do
+        expect do
+          Jimmy.configure do |config|
+            config.additional_context = { key: 'value' }
+          end
+        end.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when additional_context is configured with an object that responds to call with no arguments ' do
+      it 'raises an error that indicates Jimmy has been misconfigured' do
+        expect do
+          Jimmy.configure do |config|
+            config.additional_context = -> { { no: 'arguments' } }
+          end
+        end.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when additional_context is configured to return something thats not a hash' do
+      it 'raises an error that indicates Jimmy has been misconfigured' do
+        expect do
+          Jimmy.configure do |config|
+            config.additional_context = ->(_) { 'not a hash' }
+          end
+        end.to raise_error(ArgumentError)
+      end
+    end
+
     context 'for an example GET request' do
       let(:env) do
         {
