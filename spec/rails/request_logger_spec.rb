@@ -1,4 +1,3 @@
-RAILS_VERSION_MAJOR = 6
 require 'spec_helper'
 require 'socket'
 require 'action_dispatch'
