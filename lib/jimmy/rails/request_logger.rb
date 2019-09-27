@@ -39,7 +39,7 @@ module Jimmy
 
       def filter_attributes(attributes)
         klass = defined?(ActiveSupport::ParameterFilter) ?
-        ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
+          ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
         @filter ||= klass.new(::Rails.application.config.filter_parameters)
         key_filtererd_attributes = @filter.filter attributes
         return key_filtererd_attributes unless Jimmy.configuration.filter_uri
