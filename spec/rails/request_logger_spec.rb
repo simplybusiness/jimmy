@@ -2,7 +2,7 @@ RAILS_VERSION_MAJOR = 6
 require 'spec_helper'
 require 'socket'
 require 'action_dispatch'
-require 'active_support/parameter_filter' if ActiveSupport::VERSION::MAJOR >= RAILS_VERSION_MAJOR
+require 'active_support/parameter_filter' if ActiveSupport::VERSION::MAJOR >= 6
 
 describe Jimmy::Rails::RequestLogger do
   let(:app) { double(:app) }
