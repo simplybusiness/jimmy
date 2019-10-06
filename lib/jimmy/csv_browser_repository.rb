@@ -20,16 +20,16 @@ module Jimmy
       ->(csv) { CSV.parse(csv, headers: true, converters: [hash_converter, array_converter]).map(&:to_h) }
     end
 
-    def to_browser
-      ->(attrs) { Browser.new(attrs.symbolize_keys) }
-    end
-
     def hash_converter
       ->(value) { value.to_s.start_with?('{') && value.to_s.end_with?('}') ? instance_eval(value) : value }
     end
 
     def array_converter
       ->(value) { value.to_s.start_with?('[') && value.to_s.end_with?(']') ? instance_eval(value) : value }
+    end
+
+    def to_browser
+      ->(attrs) { Browser.new(attrs.symbolize_keys) }
     end
   end
 end
