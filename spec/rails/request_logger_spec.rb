@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'socket'
-require 'action_dispatch'
+require 'active_support/parameter_filter'
 
 describe Jimmy::Rails::RequestLogger do
   let(:app) { double(:app) }
@@ -76,14 +76,14 @@ describe Jimmy::Rails::RequestLogger do
     before do
       allow(::Rails).to receive_message_chain(:application, :config, :filter_parameters)
         .and_return filter_string
-      allow(ActionDispatch::Http::ParameterFilter).to receive(:new)
+      allow(ActiveSupport::ParameterFilter).to receive(:new)
         .and_return parameter_filter
       allow(parameter_filter).to receive(:filter).and_return(attributes)
     end
 
     context "without filter_uri configuration" do
       it 'instantiates a new ParameterFilter' do
-        expect(ActionDispatch::Http::ParameterFilter).to receive(:new).with(filter_string)
+        expect(ActiveSupport::ParameterFilter).to receive(:new).with(filter_string)
         subject.filter_attributes(attributes)
       end
 
@@ -101,7 +101,7 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       it 'processes the parameter_filter filter as standard' do
-        expect(ActionDispatch::Http::ParameterFilter).to receive(:new).with(filter_string)
+        expect(ActiveSupport::ParameterFilter).to receive(:new).with(filter_string)
         expect(parameter_filter).to receive(:filter).with(attributes)
         subject.filter_attributes(attributes)
       end
