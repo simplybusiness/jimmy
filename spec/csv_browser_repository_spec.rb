@@ -3,11 +3,10 @@
 require 'spec_helper'
 
 describe Jimmy::CSVBrowserRepository do
-  describe '#find_by' do
-    
+  describe '#find' do
     it 'when browser is found by user agent it returns the correct browser' do
       repository = described_class.new(csv: csv_buffer_from(two_browser_definitions_csv))
-      browser = repository.find_by(user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9")
+      browser = repository.find { |b| b.user_agent == 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9' }
       expect(browser.attributes).to eq(
         capabilities: [],
         detected_addons: [],

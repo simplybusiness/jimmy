@@ -4,12 +4,14 @@ require 'csv'
 
 module Jimmy
   class CSVBrowserRepository
+    include Enumerable
+
     def initialize(csv:)
       @browsers = csv.yield_self(&parse).map(&to_browser)
     end
 
-    def find_by(user_agent:)
-      @browsers.find { |browser| browser.user_agent == user_agent }
+    def each(&block)
+      @browsers.each(&block)
     end
 
     private
