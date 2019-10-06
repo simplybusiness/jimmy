@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rack', '>= 1.4'
   spec.add_dependency 'actionpack'
+  spec.add_dependency 'dry-struct'
 end
