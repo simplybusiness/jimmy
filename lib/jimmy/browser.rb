@@ -7,7 +7,6 @@ end
 module Jimmy
   class Browser < Dry::Struct
     attribute :user_agent, Types::String.optional
-    attribute :times_seen, Types::String.optional
     attribute :simple_software_string, Types::String.optional
     attribute :simple_sub_description_string, Types::String.optional
     attribute :simple_operating_platform_string, Types::String.optional
@@ -40,7 +39,5 @@ module Jimmy
     attribute :extra_info_dict, Types::Hash
     attribute :capabilities, Types::Array
     attribute :detected_addons, Types::Array
-    attribute :first_seen_at, Types::String.optional
-    attribute :last_seen_at, Types::String.optional
   end
 end

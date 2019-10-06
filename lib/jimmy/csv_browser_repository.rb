@@ -3,7 +3,7 @@
 require 'csv'
 
 module Jimmy
-  class BrowserRepository
+  class CSVBrowserRepository
     def initialize(csv:)
       @browsers = csv.yield_self(&parse).map(&to_browser)
     end
@@ -23,11 +23,11 @@ module Jimmy
     end
 
     def hash_converter
-      ->(value) { value.to_s.start_with?('{') && value.to_s.end_with?('}') ?  instance_eval(value) : value }
+      ->(value) { value.to_s.start_with?('{') && value.to_s.end_with?('}') ? instance_eval(value) : value }
     end
 
     def array_converter
-      ->(value) { value.to_s.start_with?('[') && value.to_s.end_with?(']') ?  instance_eval(value) : value }
+      ->(value) { value.to_s.start_with?('[') && value.to_s.end_with?(']') ? instance_eval(value) : value }
     end
   end
 end

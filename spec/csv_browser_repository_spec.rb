@@ -2,53 +2,50 @@
 
 require 'spec_helper'
 
-describe Jimmy::BrowserRepository do
+describe Jimmy::CSVBrowserRepository do
   describe '#find_by' do
     
     it 'when browser is found by user agent it returns the correct browser' do
-      repository = Jimmy::BrowserRepository.new(csv: csv_buffer_from(two_browser_definitions_csv))
+      repository = described_class.new(csv: csv_buffer_from(two_browser_definitions_csv))
       browser = repository.find_by(user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9")
       expect(browser.attributes).to eq(
         capabilities: [],
-       detected_addons: [],
-       extra_info: {},
-       extra_info_dict: {},
-       first_seen_at: '2015-08-15 06:30:23.000000',
-       hardware_sub_sub_type: nil,
-       hardware_sub_type: nil,
-       hardware_type: 'computer',
-       hardware_type_specific: nil,
-       last_seen_at: '2019-09-27 00:00:00.000000',
-       layout_engine_name: 'WebKit',
-       layout_engine_version: ['600', '8', '9'],
-       operating_platform: nil,
-       operating_platform_code: nil,
-       operating_platform_vendor_name: nil,
-       operating_system: 'Mac OS X (Yosemite)',
-       operating_system_flavour: nil,
-       operating_system_flavour_code: nil,
-       operating_system_frameworks: [],
-       operating_system_name: 'Mac OS X',
-       operating_system_name_code: 'mac-os-x',
-       operating_system_version: 'Yosemite',
-       operating_system_version_full: '10.10.5',
-       simple_operating_platform_string: nil,
-       simple_software_string: 'Safari 8 on Mac OS X (Yosemite)',
-       simple_sub_description_string: nil,
-       software: 'Safari 8',
-       software_name: 'Safari',
-       software_name_code: 'safari',
-       software_sub_type: 'web-browser',
-       software_type: 'browser',
-       software_type_specific: nil,
-       software_version: '8',
-       software_version_full: '8.0.8',
-       times_seen: '62506',
-       user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9',
+        detected_addons: [],
+        extra_info: {},
+        extra_info_dict: {},
+        hardware_sub_sub_type: nil,
+        hardware_sub_type: nil,
+        hardware_type: 'computer',
+        hardware_type_specific: nil,
+        layout_engine_name: 'WebKit',
+        layout_engine_version: ['600', '8', '9'],
+        operating_platform: nil,
+        operating_platform_code: nil,
+        operating_platform_vendor_name: nil,
+        operating_system: 'Mac OS X (Yosemite)',
+        operating_system_flavour: nil,
+        operating_system_flavour_code: nil,
+        operating_system_frameworks: [],
+        operating_system_name: 'Mac OS X',
+        operating_system_name_code: 'mac-os-x',
+        operating_system_version: 'Yosemite',
+        operating_system_version_full: '10.10.5',
+        simple_operating_platform_string: nil,
+        simple_software_string: 'Safari 8 on Mac OS X (Yosemite)',
+        simple_sub_description_string: nil,
+        software: 'Safari 8',
+        software_name: 'Safari',
+        software_name_code: 'safari',
+        software_sub_type: 'web-browser',
+        software_type: 'browser',
+        software_type_specific: nil,
+        software_version: '8',
+        software_version_full: '8.0.8',
+        user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9'
       )
     end
   end
-  
+
   def csv_buffer_from(contents)
     buffer = StringIO.new(contents)
     buffer.rewind
