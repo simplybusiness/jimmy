@@ -17,7 +17,7 @@ describe Jimmy::CSVBrowserRepository do
         hardware_type: 'computer',
         hardware_type_specific: nil,
         layout_engine_name: 'WebKit',
-        layout_engine_version: ['600', '8', '9'],
+        layout_engine_version: %w[600 8 9],
         operating_platform: nil,
         operating_platform_code: nil,
         operating_platform_vendor_name: nil,
