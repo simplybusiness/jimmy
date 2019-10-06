@@ -1,7 +1,7 @@
 module Jimmy
   class Configuration
     attr_accessor :samplers
-    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check
+    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check, :browsers
 
     def file_path
       @file_path || default_file_path
@@ -31,10 +31,18 @@ module Jimmy
       @additional_context = additional_context
     end
 
+    def browsers
+      @browsers || Jimmy::CSVBrowserRepository.new(File.open(default_browser_csv_file_path))
+    end
+
     private
 
     def default_file_path
       ::Rails.root + 'log' + (::Rails.env + '_json.log')
+    end
+
+    def default_browser_csv_file_path
+      'data/common_browsers.csv'
     end
   end
 
