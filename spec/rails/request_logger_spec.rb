@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'socket'
-require 'active_support/parameter_filter'
+require 'action_dispatch'
+require 'active_support/parameter_filter' if ActiveSupport::VERSION::MAJOR >= 6
 
 describe Jimmy::Rails::RequestLogger do
   let(:app) { double(:app) }
@@ -61,9 +62,15 @@ describe Jimmy::Rails::RequestLogger do
   end
 
   describe '#filter_attributes' do
-
     subject { described_class.new(app) }
 
+    let(:klass) do
+      if defined?(ActiveSupport::ParameterFilter)
+        ActiveSupport::ParameterFilter
+      else
+        ActionDispatch::Http::ParameterFilter
+      end
+    end
     let(:filter_string) { [:personally_identifiable_info] }
     let(:parameter_filter) { double(:ParameterFilter) }
     let(:attributes) {
@@ -76,14 +83,14 @@ describe Jimmy::Rails::RequestLogger do
     before do
       allow(::Rails).to receive_message_chain(:application, :config, :filter_parameters)
         .and_return filter_string
-      allow(ActiveSupport::ParameterFilter).to receive(:new)
+      allow(klass).to receive(:new)
         .and_return parameter_filter
       allow(parameter_filter).to receive(:filter).and_return(attributes)
     end
 
     context "without filter_uri configuration" do
       it 'instantiates a new ParameterFilter' do
-        expect(ActiveSupport::ParameterFilter).to receive(:new).with(filter_string)
+        expect(klass).to receive(:new).with(filter_string)
         subject.filter_attributes(attributes)
       end
 
@@ -101,7 +108,7 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       it 'processes the parameter_filter filter as standard' do
-        expect(ActiveSupport::ParameterFilter).to receive(:new).with(filter_string)
+        expect(klass).to receive(:new).with(filter_string)
         expect(parameter_filter).to receive(:filter).with(attributes)
         subject.filter_attributes(attributes)
       end
