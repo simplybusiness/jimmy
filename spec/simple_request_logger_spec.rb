@@ -152,6 +152,14 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
+    context 'when HTTP_USER_AGENT is a browser we dont recognise' do
+      let(:env) { { 'HTTP_USER_AGENT' => 'unknown browser' } }
+      it 'records browser as blank' do
+        expect(json).to include('browser' => {})
+      end
+    end
+
+
     context 'when X-Request-ID is set in request and response' do
       let(:env) { { 'HTTP_X_REQUEST_ID' => 'thequickbrownfox' } }
       let(:upstream) do
