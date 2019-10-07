@@ -15,8 +15,10 @@ module Jimmy
       private
 
       def log_entry(hash)
-         Entry.new(error_formatter: Entry::RubyErrorFormatter.new).
-           merge!(collect_stats_from(sampler_instances)).merge!(hash)
+         Entry
+           .new(error_formatter: Entry::RubyErrorFormatter.new)
+           .merge!(collect_stats_from(sampler_instances))
+           .merge!(hash)
       end
 
       def log_writer

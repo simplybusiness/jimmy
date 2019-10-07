@@ -91,6 +91,7 @@ module Jimmy
       attributes.merge!(true_client_ip: env['HTTP_TRUE_CLIENT_IP']) if env['HTTP_TRUE_CLIENT_IP']
       attributes.merge!(cflare_trust_score: env['HTTP_CF_TRUST_SCORE']) if env['HTTP_CF_TRUST_SCORE']
       attributes.merge!(x_forwarded_for: env['HTTP_X_FORWARDED_FOR']) if env['HTTP_X_FORWARDED_FOR']
+      attributes.merge!(browser: extract_browser_details_from_user_agent(env['HTTP_USER_AGENT'])) if env['HTTP_USER_AGENT']
 
       attributes.merge!(additional_context_from(env))
 
@@ -101,6 +102,10 @@ module Jimmy
       Jimmy.configuration.additional_context.call(env)
     rescue StandardError
       {}
+    end
+
+    def extract_browser_details_from_user_agent(user_agent)
+      (Jimmy.configuration.browsers.find { |browser| browser.user_agent == user_agent } || {}).to_h
     end
 
     def attributes_for_response(response)

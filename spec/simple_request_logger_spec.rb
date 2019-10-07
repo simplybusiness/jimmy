@@ -109,6 +109,49 @@ describe Jimmy::SimpleRequestLogger do
       end
     end
 
+    context 'when HTTP_USER_AGENT is set' do
+      let(:env) { { 'HTTP_USER_AGENT' => 'Mozilla/5.0 (iPad; CPU OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12H143 Safari/600.1.4' } }
+      it 'records the details of the browser' do
+        expect(json).to include(
+          'browser' => {
+            'capabilities' => [],
+            'detected_addons' => [],
+            'extra_info' => {},
+            'extra_info_dict' => { 'Mobile Build' => '12H143' },
+            'hardware_sub_sub_type' => nil,
+            'hardware_sub_type' => 'tablet',
+            'hardware_type' => 'mobile',
+            'hardware_type_specific' => nil,
+            'layout_engine_name' => 'WebKit',
+            'layout_engine_version' => %w[600 1 4],
+            'operating_platform' => 'iPad',
+            'operating_platform_code' => nil,
+            'operating_platform_vendor_name' => 'Apple',
+            'operating_system' => 'iOS 8.4',
+            'operating_system_flavour' => nil,
+            'operating_system_flavour_code' => nil,
+            'operating_system_frameworks' => [],
+            'operating_system_name' => 'iOS',
+            'operating_system_name_code' => 'ios',
+            'operating_system_version' => '8.4',
+            'operating_system_version_full' => '8.4',
+            'simple_operating_platform_string' => 'Apple iPad',
+            'simple_software_string' => 'Safari 8 on iOS 8.4',
+            'simple_sub_description_string' => nil,
+            'software' => 'Safari 8',
+            'software_name' => 'Safari',
+            'software_name_code' => 'safari',
+            'software_sub_type' => 'web-browser',
+            'software_type' => 'browser',
+            'software_type_specific' => nil,
+            'software_version' => '8',
+            'software_version_full' => '8.0',
+            'user_agent' => 'Mozilla/5.0 (iPad; CPU OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12H143 Safari/600.1.4'
+          }
+        )
+      end
+    end
+
     context 'when X-Request-ID is set in request and response' do
       let(:env) { { 'HTTP_X_REQUEST_ID' => 'thequickbrownfox' } }
       let(:upstream) do

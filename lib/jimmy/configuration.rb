@@ -32,7 +32,7 @@ module Jimmy
     end
 
     def browsers
-      @browsers || Jimmy::CSVBrowserRepository.new(File.open(default_browser_csv_file_path))
+      @browsers || Jimmy::CSVBrowserRepository.new(csv: File.open(default_browser_csv_file_path))
     end
 
     private
