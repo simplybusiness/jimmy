@@ -1,5 +1,6 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'jimmy/version'
 
@@ -15,8 +16,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Simply Business']
   spec.email         = ['tech@simplybusiness.co.uk']
 
-  spec.summary       = ''
-  spec.description   = ''
+  spec.summary       = 'Middleware to format logs as JSON.'
+  spec.description   = 'Jimmy is middleware that formats logs as JSON so they can be easily ingested with Log Stash and fed into Kibana.'
   spec.homepage      = 'https://github.com/simplybusiness/jimmy'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
