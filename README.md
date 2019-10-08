@@ -46,71 +46,131 @@ And then execute:
 bundle
 ```
 
-## Usage
-
-In order to allow a Rails application to write JSON logs you need to add Jimmy as middleware
-(just after default middleware which captures exception and shows debug screen):
+Add Jimmy as middleware:
 
 ```ruby
+# config/application.rb
+
 config.middleware.insert_after ActionDispatch::DebugExceptions, Jimmy::Rails::RequestLogger
 ```
 
-It possible configure the samplers to use via a Rails initializer:
+## Configuration
 
 ```ruby
 # config/initializers/jimmy.rb
 
 Jimmy.configure do |config|
-  config.samplers = [Jimmy::Samplers::Time, Jimmy::Samplers::Memory]
+  config.samplers              = [Jimmy::Samplers::Time, Jimmy::Samplers::Memory]
+  config.filter_uri            = true
+  config.logger_stream         = STDOUT
+  config.file_path             = 'log/json_formatted.log'
+  config.additional_context    = ->(env) { { username: env['REMOTE_USER'] } }
+  config.browser_csv_file_path = Rails.root.join('data', 'browsers.csv')
 end
 ```
 
- The available samplers are:
+#### `samplers`
 
-* `Jimmy::Samplers::Time` - it used to store the request duration
-* `Jimmy::Samplers::Memory` - it used to store the RSS memory value for the ruby process
+* `Jimmy::Samplers::Time` - used to store the request duration
+* `Jimmy::Samplers::Memory` - used to store the RSS memory value for the Ruby process
 
-As default the only active sampler is `Jimmy::Samplers::Time`
+Example: `config.samplers = [Jimmy::Samplers::Time, Jimmy::Samplers::Memory]`
 
-## Configuration
-
-Various configuration options are provided when setting up Jimmy in your Rails application
+Default: `Jimmy::Samplers::Time`
 
 #### `filter_uri`
 
-Defaults to `false`. Can be configured in your Rails application's Jimmy initializer with `config.filter_uri = true`. If set to true,
-Jimmy will filter any `Rails.application.config.filter_parameters` from the URI query string as well as the query params.
+If `true`, Jimmy will filter any `Rails.application.config.filter_parameters` from the URI query string as well as the query params.
+
+Example: `config.filter_uri = true`
+
+Default: `false`
 
 #### `logger_stream`
 
-Can be used to specify the stream used for the logging output in your Jimmy initializer eg. `config.logger_stream = STDOUT`. Will default
-to using the `#file_path` as defined below.
+Can be used to specify the stream used for the logging output.
+
+Example: `config.logger_stream = STDOUT`. 
+
+Default: `#file_path` as below.
 
 #### `file_path`
 
-Set the file path of the log output file via `config.file_path = path/to/file.log`. Path will default to `::Rails.root + 'log' + (::Rails.env + '_json.log')`
+Set the file path of the log output file.
+
+Example: `config.file_path = 'path/to/file.log'`.
+
+Default: `::Rails.root + 'log' + (::Rails.env + '_json.log')`
 
 #### `additional_context`
 
 Set additional attributes to be logged. Should be an object that responds to `#call` with one argument - the `env`.
 
-Defaults to `->(_) { {} }`
+Example: `config.additional_context = ->(env) { { username: env['REMOTE_USER'] } }`
 
-```ruby
-# Record the username when authenticating using Rack Basic Auth:
-Jimmy.configure do |config|
-  config.additional_context = ->(env) { { username: env['REMOTE_USER'] } }
-end
+Default: `->(_) { {} }`
+
+#### `browser_csv_file_path`
+
+* File path of a CSV that stores browser data for user agents
+* This is used to add browser data to every request.
+* User agent data comes from [WhatIsMyBrowser](https://developers.whatismybrowser.com/useragents/database/)
+* It should have columns named:
+
 ```
+user_agent,simple_software_string,simple_sub_description_string,simple_operating_platform_string,software,software_name,software_name_code,software_version,software_version_full,operating_system,operating_system_name,operating_system_name_code,operating_system_version,operating_system_version_full,operating_system_flavour,operating_system_flavour_code,operating_system_frameworks,operating_platform,operating_platform_code,operating_platform_vendor_name,software_type,software_sub_type,software_type_specific,hardware_type,hardware_sub_type,hardware_sub_sub_type,hardware_type_specific,layout_engine_name,layout_engine_version,extra_info,extra_info_dict,capabilities,detected_addons
+```
+
+**Example**
+
+* `HTTP_USER_AGENT` is `Mozilla/5.0 (iPad; CPU OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12H143 Safari/600.1.4`
+* The browser details are looked up and merged into the log entry:
+```ruby
+  'browser' => {
+    'capabilities' => [],
+    'detected_addons' => [],
+    'extra_info' => {},
+    'extra_info_dict' => { 'Mobile Build' => '12H143' },
+    'hardware_sub_sub_type' => nil,
+    'hardware_sub_type' => 'tablet',
+    'hardware_type' => 'mobile',
+    'hardware_type_specific' => nil,
+    'layout_engine_name' => 'WebKit',
+    'layout_engine_version' => ['600', '1', '4'],
+    'operating_platform' => 'iPad',
+    'operating_platform_code' => nil,
+    'operating_platform_vendor_name' => 'Apple',
+    'operating_system' => 'iOS 8.4',
+    'operating_system_flavour' => nil,
+    'operating_system_flavour_code' => nil,
+    'operating_system_frameworks' => [],
+    'operating_system_name' => 'iOS',
+    'operating_system_name_code' => 'ios',
+    'operating_system_version' => '8.4',
+    'operating_system_version_full' => '8.4',
+    'simple_operating_platform_string' => 'Apple iPad',
+    'simple_software_string' => 'Safari 8 on iOS 8.4',
+    'simple_sub_description_string' => nil,
+    'software' => 'Safari 8',
+    'software_name' => 'Safari',
+    'software_name_code' => 'safari',
+    'software_sub_type' => 'web-browser',
+    'software_type' => 'browser',
+    'software_type_specific' => nil,
+    'software_version' => '8',
+    'software_version_full' => '8.0',
+    'user_agent' => 'Mozilla/5.0 (iPad; CPU OS 8_4 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12H143 Safari/600.1.4'
+  }
+```
+
+Default: `'data/common_browsers.csv'` See this file for examples.
 
 ## Using the logs
 
 ### Searching and filtering
 
-Because the log is JSON, you can parse it in any language that
-can parse JSON.  Such as Javascript.  `script/json_log_find.js`
-is a noddy node.js script which accepts JSON logs on stdin, and
-takes command line parameters to find entries matching specified criteria
+* Because the log is JSON, you can parse it in any language that can parse JSON.
+* `script/json_log_find.js` is a noddy node.js script which accepts JSON logs on stdin, and takes command line parameters to find entries matching specified criteria
 
 ```
 $ cat log/development_json.log | node script/json_log_find.js   \
@@ -128,19 +188,14 @@ $ cat log/development_json.log | node script/json_log_find.js   \
 
 If you have many nodes in a cluster, you can merge logs from them using standard Unix tools : `cat *.log | sort`
 
-
 ## How it works/how to customize the log format
 
-* The default log format is set in `lib/middleware/simple_request_logger.rb` which is an abstract class iplementing a Rack middleware, that knows nothing of Rails.  It is specified in `spec/middleware/simple_request_logger_spec.rb`
-
-* We subclass it in `lib/middleware/rails/request_logger.rb`: this provides implementations of
-
+* The default log format is set in `lib/middleware/simple_request_logger.rb` which is an abstract class implementing a Rack middleware that knows nothing of Rails.  It is specified in `spec/middleware/simple_request_logger_spec.rb`
+* We subclass it in `lib/middleware/rails/request_logger.rb`: this provides implementations of:
  * `#stream` that tell it where to send the log
  * `#filter_attributes` that adds the local IP address and filters passwords from parameters
-
-* We add before_filters to `ApplicationController` which logs Rails controller name and action name through `Jimmy::Rails::ControllerRuntime` that is included at runtime via `ActiveSupport`
-
-* If you need other stuff logged in some context, add your own filters that run in that context.  Simples.
+* We add `before_filter`s to `ApplicationController` which logs Rails controller name and action name through `Jimmy::Rails::ControllerRuntime` that is included at runtime via `ActiveSupport`
+* If you need other data logged in some context, add your own filters that run in that context.
 
 ## Using the Ruby logger
 
@@ -149,7 +204,7 @@ You can trigger a logger "manually" by using [Ruby::Logger](https://github.com/s
 Simple usage example:
 
 ```ruby
-Jimmy::Ruby:Logger.instance.log({message: "Error message"})
+Jimmy::Ruby:Logger.instance.log({ message: 'Error message' })
 ```
 
 ## Contributing
@@ -163,4 +218,4 @@ Jimmy::Ruby:Logger.instance.log({message: "Error message"})
 
 ## Copyright
 
-Copyright © 2016-2017 Simply Business. See LICENSE for details.
+Copyright © 2016-2019 Simply Business. See LICENSE for details.
