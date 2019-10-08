@@ -1,10 +1,14 @@
 module Jimmy
   class Configuration
     attr_accessor :samplers
-    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check, :browsers
+    attr_writer :file_path, :logger_stream, :filter_uri, :ip_spoofing_check, :browser_csv_file_path
 
     def file_path
       @file_path || default_file_path
+    end
+
+    def browser_csv_file_path
+      @browser_csv_file_path || default_browser_csv_file_path
     end
 
     def logger_stream
@@ -29,10 +33,6 @@ module Jimmy
       raise ArgumentError.new("additional_context has been misconfigured. Please supply an object that responds to #call with a single argument. You supplied a #{additional_context.class}: #{additional_context}") if !additional_context.respond_to?(:call) || !additional_context.parameters.one?
       raise ArgumentError.new("additional_context has been misconfigured. Please supply an object that returns a hash.") if !additional_context.call(DummyEnv.new).is_a?(Hash)
       @additional_context = additional_context
-    end
-
-    def browsers
-      @browsers || Jimmy::CSVBrowserRepository.new(csv: File.open(default_browser_csv_file_path))
     end
 
     private

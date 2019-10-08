@@ -24,6 +24,14 @@ module Jimmy
   def self.configuration
     @configuration ||= Configuration.new
   end
+
+  def self.browser_repo
+    @browser_repo ||= CSVBrowserRepository.new(csv: File.open(configuration.browser_csv_file_path))
+  end
+end
+
+ActiveSupport.on_load(:after_initialize) do
+  Jimmy.browser_repo.preload!
 end
 
 ActiveSupport.on_load(:action_controller) do

@@ -105,7 +105,7 @@ module Jimmy
     end
 
     def extract_browser_details_from_user_agent(user_agent)
-      (Jimmy.configuration.browsers.find { |browser| browser.user_agent == user_agent } || {}).to_h
+      (Jimmy.browser_repo.find { |browser| browser.user_agent == user_agent } || {}).to_h
     end
 
     def attributes_for_response(response)
