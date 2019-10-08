@@ -1,15 +1,16 @@
 Metrics/LineLength:
   Max: 200
 Documentation:
-    Enabled: false
+  Enabled: false
 ModuleLength:
-    Enabled: false
+  Enabled: false
 ClassLength:
-    Enabled: false
+  Enabled: false
 Style/RaiseArgs:
   Enabled: false
 MethodLength:
   Max: 15
 AllCops:
+  TargetRubyVersion: 2.5.0
   Exclude:
     - 'lib/journey/utils/string_utils.rb'
