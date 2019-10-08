@@ -22,6 +22,8 @@ describe Jimmy::SimpleRequestLogger do
       proc { |_env| [rsp_code, { 'Content-Type' => 'text/html' }, %w(hi there)] }
     end
 
+    before(:all) { Jimmy.browser_repo.preload! }
+
     subject(:json) do
       # the timestamp in the json file has a lower resolution than is
       # available from Time::now, so if we're not careful here it can
