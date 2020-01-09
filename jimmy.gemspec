@@ -3,15 +3,9 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'jimmy/version'
 
-gem_version = if ENV['GEM_PRE_RELEASE'].nil? || ENV['GEM_PRE_RELEASE'].empty?
-                Jimmy::VERSION
-              else
-                "#{Jimmy::VERSION}.#{ENV['GEM_PRE_RELEASE']}"
-              end
-
 Gem::Specification.new do |spec|
   spec.name          = 'jimmy'
-  spec.version       = gem_version
+  spec.version       = Jimmy::VERSION
   spec.authors       = ['Simply Business']
   spec.email         = ['tech@simplybusiness.co.uk']
 
