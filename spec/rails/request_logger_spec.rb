@@ -113,9 +113,21 @@ describe Jimmy::Rails::RequestLogger do
         subject.filter_attributes(attributes)
       end
 
-      it 'additionally filters the the uri' do
-        filtered_attribues = subject.filter_attributes(attributes)
-        expect(filtered_attribues[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
+      context 'with filter_parameters as symbols' do
+        it 'additionally filters the uri' do
+          filtered_attribues = subject.filter_attributes(attributes)
+          expect(filtered_attribues[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
+        end
+      end
+
+      context 'with filter_parameters as contained regexps' do
+        let(:filter_string) { [/^word$/] }
+        let(:attributes) { { uri: "/example?word=solidity" } }
+
+        it 'additionally filters the uri' do
+          filtered_attribues = subject.filter_attributes(attributes)
+          expect(filtered_attribues[:uri]).to eq "/example?word=[FILTERED]"
+        end
       end
     end
   end
