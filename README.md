@@ -81,6 +81,10 @@ Various configuration options are provided when setting up Jimmy in your Rails a
 Defaults to `false`. Can be configured in your Rails application's Jimmy initializer with `config.filter_uri = true`. If set to true,
 Jimmy will filter any `Rails.application.config.filter_parameters` from the URI query string as well as the query params.
 
+**Important note**
+
+`Rails.application.config.filter_parameters` accepts symbols and regexps. For filtering uris, Jimmy will currently match only regexps that are complete strings (ie begin with `^` and end with `$`) and symbols.
+
 #### `logger_stream`
 
 Can be used to specify the stream used for the logging output in your Jimmy initializer eg. `config.logger_stream = STDOUT`. Will default
