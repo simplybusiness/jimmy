@@ -71,12 +71,12 @@ describe Jimmy::Rails::RequestLogger do
         ActionDispatch::Http::ParameterFilter
       end
     end
-    let(:filter_string) { [:personally_identifiable_info] }
+    let(:filter_string) { [:password] }
     let(:parameter_filter) { double(:ParameterFilter) }
     let(:attributes) {
       {
-        uri: "/example?personally_identifiable_info=private_email@example.com",
-        query_params: { personally_identifiable_info: "private_email@example.com" }
+        uri: "/example?megalongpassword=dsdsds",
+        query_params: { password: "private_email@example.com" }
       }
     }
 
@@ -128,19 +128,19 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       context 'with filter_parameters as contained regexps' do
-        let(:filter_string) { [/^word$/] }
-        let(:attributes) { { uri: "/example?word=solidity" } }
+        let(:filter_string) { [/^word$/, /^other_word$/] }
+        let(:attributes) { { uri: "/example?word=solidity&other_word=liquidity" } }
 
         it 'filters the uri for entire matches of the word' do
           allow(parameter_filter).to receive(:filter).and_return(attributes)
           filtered_attributes = subject.filter_attributes(attributes)
-          expect(filtered_attributes[:uri]).to eq "/example?word=[FILTERED]"
+          expect(filtered_attributes[:uri]).to eq "/example?word=[FILTERED]&other_word=[FILTERED]"
         end
 
         it 'does not filter the uri for partial matches of the word' do
           attributes = [
-            { uri: "/example?whoahword=solidity" },
-            { uri: "/example?wordyoo=solidity" }
+            { uri: "/example?whoahword=solidity&whoahother_word=liquidity" },
+            { uri: "/example?wordyoo=solidity&other_wordyoo=liquidity" }
           ]
 
           attributes.each do |attrs|
@@ -150,6 +150,20 @@ describe Jimmy::Rails::RequestLogger do
             filtered_attributes = subject.filter_attributes(attrs)
             expect(filtered_attributes[:uri]).to eq original_attr_uri
           end
+        end
+      end
+
+      context 'with filter_parameters as non-contained regexps' do
+        let(:filter_string) { [/l.*g/] }
+        let(:attributes) { { uri: "/example?longoword=solidity" } }
+
+        before do
+          allow(parameter_filter).to receive(:filter).and_return(attributes)
+        end
+
+        it 'filters the uri for entire matches of the word' do
+          filtered_attributes = subject.filter_attributes(attributes)
+          expect(filtered_attributes[:uri]).to eq "/example?longoword=[FILTERED]"
         end
       end
     end

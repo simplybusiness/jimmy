@@ -51,13 +51,20 @@ module Jimmy
       def filter_uri_query(attributes)
         ::Rails.application.config.filter_parameters.each do |matcher|
           if matcher_is_a_contained_regex?(matcher)
-            word_to_replace = "?#{matcher.source[1...-1]}"
+            word_to_replace = "#{matcher.source[1...-1]}"
             matcher = Regexp.escape("#{word_to_replace}=")
+
+            regex = Regexp.new('[&|?]' + matcher.to_s + '[^&]+')
+
+            attributes[:uri].scan(regex).each do |param|
+              require 'pry'; binding.pry
+              attributes[:uri].gsub!(param, "#{word_to_replace}=[FILTERED]")
+            end
           else
-            word_to_replace = matcher
+            attributes[:uri].gsub!(matcher, "#{matcher}=[FILTERED]")
           end
 
-          attributes[:uri].gsub!(Regexp.new(matcher.to_s + '[^&]+'), "#{word_to_replace}=[FILTERED]")
+
         end
         attributes
       end
