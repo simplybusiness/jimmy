@@ -50,9 +50,17 @@ module Jimmy
 
       def filter_uri_query(attributes)
         ::Rails.application.config.filter_parameters.each do |matcher|
+          matcher = matcher.source[1...-1] if matcher_is_a_contained_regex?(matcher)
+
           attributes[:uri].gsub!(Regexp.new(matcher.to_s + '[^&]+'), "#{matcher}=[FILTERED]")
         end
         attributes
+      end
+
+      def matcher_is_a_contained_regex?(matcher)
+        return false unless matcher.is_a? Regexp
+
+        (/^\^.*\$$/).match? matcher.source
       end
 
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
