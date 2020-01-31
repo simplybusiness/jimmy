@@ -85,10 +85,13 @@ describe Jimmy::Rails::RequestLogger do
         .and_return filter_string
       allow(klass).to receive(:new)
         .and_return parameter_filter
-      allow(parameter_filter).to receive(:filter).and_return(attributes)
     end
 
     context "without filter_uri configuration" do
+      before do
+        allow(parameter_filter).to receive(:filter).and_return(attributes)
+      end
+
       it 'instantiates a new ParameterFilter' do
         expect(klass).to receive(:new).with(filter_string)
         subject.filter_attributes(attributes)
@@ -107,6 +110,10 @@ describe Jimmy::Rails::RequestLogger do
         end
       end
 
+      before do
+        allow(parameter_filter).to receive(:filter).and_return(attributes)
+      end
+
       it 'processes the parameter_filter filter as standard' do
         expect(klass).to receive(:new).with(filter_string)
         expect(parameter_filter).to receive(:filter).with(attributes)
@@ -115,8 +122,8 @@ describe Jimmy::Rails::RequestLogger do
 
       context 'with filter_parameters as symbols' do
         it 'additionally filters the uri' do
-          filtered_attribues = subject.filter_attributes(attributes)
-          expect(filtered_attribues[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
+          filtered_attributes = subject.filter_attributes(attributes)
+          expect(filtered_attributes[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
         end
       end
 
@@ -124,9 +131,25 @@ describe Jimmy::Rails::RequestLogger do
         let(:filter_string) { [/^word$/] }
         let(:attributes) { { uri: "/example?word=solidity" } }
 
-        it 'additionally filters the uri' do
-          filtered_attribues = subject.filter_attributes(attributes)
-          expect(filtered_attribues[:uri]).to eq "/example?word=[FILTERED]"
+        it 'filters the uri for entire matches of the word' do
+          allow(parameter_filter).to receive(:filter).and_return(attributes)
+          filtered_attributes = subject.filter_attributes(attributes)
+          expect(filtered_attributes[:uri]).to eq "/example?word=[FILTERED]"
+        end
+
+        it 'does not filter the uri for partial matches of the word' do
+          attributes = [
+            { uri: "/example?whoahword=solidity" },
+            { uri: "/example?wordyoo=solidity" }
+          ]
+
+          attributes.each do |attrs|
+            allow(parameter_filter).to receive(:filter).and_return(attrs)
+
+            original_attr_uri = attrs[:uri].dup
+            filtered_attributes = subject.filter_attributes(attrs)
+            expect(filtered_attributes[:uri]).to eq original_attr_uri
+          end
         end
       end
     end
