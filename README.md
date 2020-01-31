@@ -83,7 +83,7 @@ Jimmy will filter any `Rails.application.config.filter_parameters` from the URI 
 
 **Important note**
 
-`Rails.application.config.filter_parameters` accepts symbols and regexps. For filtering uris, Jimmy will currently match only regexps that are complete strings (ie begin with `^` and end with `$`) and symbols.
+`Rails.application.config.filter_parameters` accepts symbols and regexps. For filtering uris, Jimmy will currently match only regexps that are complete strings (ie begin with `^` and end with `$`) and symbols, but it will treat them as fuzzy-finds - if you have a regexp filter for `^email$` it will also filter out `?email_address`. This is in line with how the symbol filters are currently applied.
 
 #### `logger_stream`
 
