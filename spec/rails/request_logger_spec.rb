@@ -71,12 +71,12 @@ describe Jimmy::Rails::RequestLogger do
         ActionDispatch::Http::ParameterFilter
       end
     end
-    let(:filter_string) { [:password] }
+    let(:filter_string) { [:personally_identifiable_info] }
     let(:parameter_filter) { double(:ParameterFilter) }
     let(:attributes) {
       {
-        uri: "/example?megalongpassword=dsdsds",
-        query_params: { password: "private_email@example.com" }
+        uri: "/example?personally_identifiable_info=private_email@example.com",
+        query_params: { personally_identifiable_info: "private_email@example.com" }
       }
     }
 
@@ -121,9 +121,19 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       context 'with filter_parameters as symbols' do
-        it 'additionally filters the uri' do
+        it 'filters the uri for entire matches of the word' do
           filtered_attributes = subject.filter_attributes(attributes)
           expect(filtered_attributes[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
+        end
+
+        it 'filters the uri for partial matches of the word' do
+          attributes = { uri: "/example?personally_identifiable_information=zoop" }
+
+          allow(parameter_filter).to receive(:filter).and_return(attributes)
+
+          original_attr_uri = attributes[:uri].dup
+          filtered_attributes = subject.filter_attributes(attributes)
+          expect(filtered_attributes[:uri]).to eq "/example?personally_identifiable_information=[FILTERED]"
         end
       end
 
@@ -161,7 +171,7 @@ describe Jimmy::Rails::RequestLogger do
           allow(parameter_filter).to receive(:filter).and_return(attributes)
         end
 
-        it 'filters the uri for entire matches of the word' do
+        it 'filters the uri for matches' do
           filtered_attributes = subject.filter_attributes(attributes)
           expect(filtered_attributes[:uri]).to eq "/example?longoword=[FILTERED]"
         end
