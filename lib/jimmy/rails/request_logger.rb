@@ -49,30 +49,28 @@ module Jimmy
       private
 
       def filter_uri_query(attributes)
-        ::Rails.application.config.filter_parameters.each do |matcher|
-          if matcher_is_a_contained_regex?(matcher)
-            word_to_replace = "#{matcher.source[1...-1]}"
-            matcher = Regexp.escape("#{word_to_replace}=")
-
-            regex = Regexp.new('[&|?]' + matcher.to_s + '[^&]+')
-
-            attributes[:uri].scan(regex).each do |param|
-              require 'pry'; binding.pry
-              attributes[:uri].gsub!(param, "#{word_to_replace}=[FILTERED]")
-            end
-          else
-            attributes[:uri].gsub!(matcher, "#{matcher}=[FILTERED]")
-          end
-
-
-        end
+        uri = URI.parse(attributes[:uri])
+        query_params = CGI.parse(uri.query)
+        filter_query_params!(query_params)
+        attributes[:uri] = build_filtered_request_uri(uri, query_params)
         attributes
       end
 
-      def matcher_is_a_contained_regex?(matcher)
-        return false unless matcher.is_a? Regexp
+      def filter_query_params!(query_params)
+        ::Rails.application.config.filter_parameters.each do |matcher|
+          matcher = Regexp.new(matcher.to_s) if matcher.is_a? Symbol
 
-        (/^\^.*\$$/).match? matcher.source
+          query_params.keys.select do |key|
+            key.scan(matcher).present?
+          end.each { |key| query_params[key] = "[FILTERED]"}
+        end
+      end
+
+      def build_filtered_request_uri(uri, query_params)
+        URI::HTTP.build(
+          path: uri.path,
+          query: CGI.unescape(URI.encode_www_form(query_params))
+        ).request_uri
       end
 
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
