@@ -49,12 +49,19 @@ module Jimmy
       private
 
       def filter_uri_query(attributes)
-        ::Rails.application.config.filter_parameters.each do |matcher|
-          matcher = matcher.source[1...-1] if matcher_is_a_contained_regex?(matcher)
+        uri = URI.parse(attributes[:uri])
+        query_params = CGI.parse(uri.query)
+        filtered_query_params = @filter.filter query_params
+        attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
 
-          attributes[:uri].gsub!(Regexp.new(matcher.to_s + '[^&]+'), "#{matcher}=[FILTERED]")
-        end
         attributes
+      end
+
+      def build_filtered_request_uri(uri, query_params)
+        URI::HTTP.build(
+          path: uri.path,
+          query: CGI.unescape(URI.encode_www_form(query_params))
+        ).request_uri
       end
 
       def matcher_is_a_contained_regex?(matcher)
