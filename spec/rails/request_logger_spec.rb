@@ -72,7 +72,6 @@ describe Jimmy::Rails::RequestLogger do
       end
     end
     let(:filter_string) { [:personally_identifiable_info] }
-    let(:parameter_filter) { double(:ParameterFilter) }
     let(:attributes) {
       {
         uri: "/example?personally_identifiable_info=private_email@example.com",
@@ -83,18 +82,17 @@ describe Jimmy::Rails::RequestLogger do
     before do
       allow(::Rails).to receive_message_chain(:application, :config, :filter_parameters)
         .and_return filter_string
-      allow(klass).to receive(:new)
-        .and_return parameter_filter
-      allow(parameter_filter).to receive(:filter).and_return(attributes)
     end
 
     context "without filter_uri configuration" do
       it 'instantiates a new ParameterFilter' do
-        expect(klass).to receive(:new).with(filter_string)
+        expect(klass).to receive(:new).with(filter_string).and_call_original
         subject.filter_attributes(attributes)
       end
 
       it 'passes the attributes to the parameter_filter filter method' do
+        parameter_filter = double(:ParameterFilter)
+        allow(klass).to receive(:new).and_return parameter_filter
         expect(parameter_filter).to receive(:filter).with(attributes)
         subject.filter_attributes(attributes)
       end
@@ -107,10 +105,11 @@ describe Jimmy::Rails::RequestLogger do
         end
       end
 
-      it 'processes the parameter_filter filter as standard' do
-        expect(klass).to receive(:new).with(filter_string)
-        expect(parameter_filter).to receive(:filter).with(attributes)
-        subject.filter_attributes(attributes)
+      it 'filters the attributes as standard' do
+        filtered_attributes = subject.filter_attributes(attributes)
+
+        expect(filtered_attributes[:query_params]).
+          to eq({ personally_identifiable_info: "[FILTERED]" })
       end
 
       context 'with filter_parameters as symbols' do
