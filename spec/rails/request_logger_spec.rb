@@ -90,11 +90,11 @@ describe Jimmy::Rails::RequestLogger do
         subject.filter_attributes(attributes)
       end
 
-      it 'passes the attributes to the parameter_filter filter method' do
-        parameter_filter = double(:ParameterFilter)
-        allow(klass).to receive(:new).and_return parameter_filter
-        expect(parameter_filter).to receive(:filter).with(attributes)
-        subject.filter_attributes(attributes)
+      it 'filters the attributes' do
+        filtered_attributes = subject.filter_attributes(attributes)
+
+        expect(filtered_attributes[:query_params]).
+          to eq({ personally_identifiable_info: "[FILTERED]" })
       end
     end
 
@@ -105,7 +105,7 @@ describe Jimmy::Rails::RequestLogger do
         end
       end
 
-      it 'filters the attributes as standard' do
+      it 'filters the attributes' do
         filtered_attributes = subject.filter_attributes(attributes)
 
         expect(filtered_attributes[:query_params]).
