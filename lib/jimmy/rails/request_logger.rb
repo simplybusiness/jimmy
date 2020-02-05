@@ -66,12 +66,6 @@ module Jimmy
         ).request_uri
       end
 
-      def matcher_is_a_contained_regex?(matcher)
-        return false unless matcher.is_a? Regexp
-
-        (/^\^.*\$$/).match? matcher.source
-      end
-
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
       def determine_local_ip
         orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true  # turn off reverse DNS resolution temporarily
