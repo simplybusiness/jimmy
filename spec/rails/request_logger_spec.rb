@@ -64,13 +64,6 @@ describe Jimmy::Rails::RequestLogger do
   describe '#filter_attributes' do
     subject { described_class.new(app) }
 
-    let(:klass) do
-      if defined?(ActiveSupport::ParameterFilter)
-        ActiveSupport::ParameterFilter
-      else
-        ActionDispatch::Http::ParameterFilter
-      end
-    end
     let(:filter_string) { [:personally_identifiable_info] }
     let(:attributes) {
       {
@@ -85,11 +78,6 @@ describe Jimmy::Rails::RequestLogger do
     end
 
     context "without filter_uri configuration" do
-      it 'instantiates a new ParameterFilter' do
-        expect(klass).to receive(:new).with(filter_string).and_call_original
-        subject.filter_attributes(attributes)
-      end
-
       it 'filters the attributes' do
         filtered_attributes = subject.filter_attributes(attributes)
 
