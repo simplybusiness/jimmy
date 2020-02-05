@@ -62,7 +62,6 @@ describe Jimmy::Rails::RequestLogger do
   end
 
   describe '#filter_attributes' do
-    let(:filter_string) { [:personally_identifiable_info] }
     let(:attributes) {
       {
         uri: "/example?personally_identifiable_info=private_email@example.com",
@@ -70,12 +69,12 @@ describe Jimmy::Rails::RequestLogger do
       }
     }
 
-    before do
-      allow(::Rails).to receive_message_chain(:application, :config, :filter_parameters)
-        .and_return filter_string
-    end
-
     context "without filter_uri configuration" do
+      before do
+        filter_params = [:personally_identifiable_info]
+        setup_rails_filter_params(filter_params)
+      end
+
       it 'filters the attributes' do
         filtered_attributes = filter_attributes(attributes)
 
@@ -89,6 +88,9 @@ describe Jimmy::Rails::RequestLogger do
         Jimmy.configure do |config|
           config.filter_uri = true
         end
+
+        filter_params = [:personally_identifiable_info]
+        setup_rails_filter_params(filter_params)
       end
 
       it 'filters the attributes' do
@@ -117,7 +119,10 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       context 'with filter_parameters as contained regexps' do
-        let(:filter_string) { [/^word$/, /^other_word$/] }
+        before do
+          filter_params = [/^word$/, /^other_word$/]
+          setup_rails_filter_params(filter_params)
+        end
 
         it 'filters the uri for entire matches of the word' do
           attributes = { uri: "/example?word=solidity&other_word=liquidity" }
@@ -135,16 +140,24 @@ describe Jimmy::Rails::RequestLogger do
             expect(filtered_uri(attrs)).to eq attrs[:uri]
           end
         end
+      end
 
-        context 'with filter_parameters as non-contained regexps' do
-          let(:filter_string) { [/l.*g/] }
+      context 'with filter_parameters as non-contained regexps' do
+        before do
+          filter_params = [/l.*g/]
+          setup_rails_filter_params(filter_params)
+        end
 
-          it 'filters the uri for matches' do
-            attributes = { uri: "/example?longoword=solidity" }
-            expect(filtered_uri(attributes)).to eq "/example?longoword=[FILTERED]"
-          end
+        it 'filters the uri for matches' do
+          attributes = { uri: "/example?longoword=solidity" }
+          expect(filtered_uri(attributes)).to eq "/example?longoword=[FILTERED]"
         end
       end
+    end
+
+    def setup_rails_filter_params(filter_params)
+      allow(::Rails).to receive_message_chain(:application, :config, :filter_parameters)
+        .and_return filter_params
     end
 
     def filtered_uri(attributes)
