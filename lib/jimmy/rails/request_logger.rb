@@ -51,19 +51,9 @@ module Jimmy
       def filter_uri_query(attributes)
         uri = URI.parse(attributes[:uri])
         query_params = CGI.parse(uri.query)
-        filter_query_params!(query_params)
-        attributes[:uri] = build_filtered_request_uri(uri, query_params)
+        filtered_query_params = @filter.filter query_params
+        attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
         attributes
-      end
-
-      def filter_query_params!(query_params)
-        ::Rails.application.config.filter_parameters.each do |matcher|
-          matcher = Regexp.new(matcher.to_s) if matcher.is_a? Symbol
-
-          query_params.keys.select do |key|
-            key.scan(matcher).present?
-          end.each { |key| query_params[key] = "[FILTERED]"}
-        end
       end
 
       def build_filtered_request_uri(uri, query_params)
