@@ -62,8 +62,6 @@ describe Jimmy::Rails::RequestLogger do
   end
 
   describe '#filter_attributes' do
-    subject { described_class.new(app) }
-
     let(:filter_string) { [:personally_identifiable_info] }
     let(:attributes) {
       {
@@ -79,7 +77,7 @@ describe Jimmy::Rails::RequestLogger do
 
     context "without filter_uri configuration" do
       it 'filters the attributes' do
-        filtered_attributes = subject.filter_attributes(attributes)
+        filtered_attributes = filter_attributes(attributes)
 
         expect(filtered_attributes[:query_params]).
           to eq({ personally_identifiable_info: "[FILTERED]" })
@@ -94,7 +92,7 @@ describe Jimmy::Rails::RequestLogger do
       end
 
       it 'filters the attributes' do
-        filtered_attributes = subject.filter_attributes(attributes)
+        filtered_attributes = filter_attributes(attributes)
 
         expect(filtered_attributes[:query_params]).
           to eq({ personally_identifiable_info: "[FILTERED]" })
@@ -103,31 +101,28 @@ describe Jimmy::Rails::RequestLogger do
       it 'returns the given uri when there are no query parameters' do
         attributes = { uri: "/example" }
 
-        filtered_attributes = subject.filter_attributes(attributes)
-        expect(filtered_attributes[:uri]).to eq "/example"
+        expect(filtered_uri(attributes)).to eq "/example"
       end
 
       context 'with filter_parameters as symbols' do
         it 'filters the uri for entire matches of the word' do
-          filtered_attributes = subject.filter_attributes(attributes)
-          expect(filtered_attributes[:uri]).to eq "/example?personally_identifiable_info=[FILTERED]"
+          expect(filtered_uri(attributes)).to eq "/example?personally_identifiable_info=[FILTERED]"
         end
 
         it 'filters the uri for partial matches of the word' do
           attributes = { uri: "/example?personally_identifiable_information=zoop" }
 
-          filtered_attributes = subject.filter_attributes(attributes)
-          expect(filtered_attributes[:uri]).to eq "/example?personally_identifiable_information=[FILTERED]"
+          expect(filtered_uri(attributes)).to eq "/example?personally_identifiable_information=[FILTERED]"
         end
       end
 
       context 'with filter_parameters as contained regexps' do
         let(:filter_string) { [/^word$/, /^other_word$/] }
-        let(:attributes) { { uri: "/example?word=solidity&other_word=liquidity" } }
 
         it 'filters the uri for entire matches of the word' do
-          filtered_attributes = subject.filter_attributes(attributes)
-          expect(filtered_attributes[:uri]).to eq "/example?word=[FILTERED]&other_word=[FILTERED]"
+          attributes = { uri: "/example?word=solidity&other_word=liquidity" }
+
+          expect(filtered_uri(attributes)).to eq "/example?word=[FILTERED]&other_word=[FILTERED]"
         end
 
         it 'does not filter the uri for partial matches of the word' do
@@ -137,21 +132,27 @@ describe Jimmy::Rails::RequestLogger do
           ]
 
           attributes.each do |attrs|
-            filtered_attributes = subject.filter_attributes(attrs)
-            expect(filtered_attributes[:uri]).to eq attrs[:uri]
+            expect(filtered_uri(attrs)).to eq attrs[:uri]
           end
         end
 
         context 'with filter_parameters as non-contained regexps' do
           let(:filter_string) { [/l.*g/] }
-          let(:attributes) { { uri: "/example?longoword=solidity" } }
 
           it 'filters the uri for matches' do
-            filtered_attributes = subject.filter_attributes(attributes)
-            expect(filtered_attributes[:uri]).to eq "/example?longoword=[FILTERED]"
+            attributes = { uri: "/example?longoword=solidity" }
+            expect(filtered_uri(attributes)).to eq "/example?longoword=[FILTERED]"
           end
         end
       end
+    end
+
+    def filtered_uri(attributes)
+      filter_attributes(attributes)[:uri]
+    end
+
+    def filter_attributes(attributes)
+      described_class.new(app).filter_attributes(attributes)
     end
   end
 end
