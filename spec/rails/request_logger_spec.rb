@@ -100,6 +100,13 @@ describe Jimmy::Rails::RequestLogger do
           to eq({ personally_identifiable_info: "[FILTERED]" })
       end
 
+      it 'returns the given uri when there are no query parameters' do
+        attributes = { uri: "/example" }
+
+        filtered_attributes = subject.filter_attributes(attributes)
+        expect(filtered_attributes[:uri]).to eq "/example"
+      end
+
       context 'with filter_parameters as symbols' do
         it 'filters the uri for entire matches of the word' do
           filtered_attributes = subject.filter_attributes(attributes)

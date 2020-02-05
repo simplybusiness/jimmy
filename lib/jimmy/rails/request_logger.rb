@@ -50,6 +50,8 @@ module Jimmy
 
       def filter_uri_query(attributes)
         uri = URI.parse(attributes[:uri])
+        return attributes unless uri.query
+
         query_params = CGI.parse(uri.query)
         filtered_query_params = @filter.filter query_params
         attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
