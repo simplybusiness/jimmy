@@ -110,6 +110,17 @@ describe Jimmy::Rails::RequestLogger do
         expect(filtered_uri(attributes)).to eq "example?word=floof"
       end
 
+      it 'can handle the uri when it has incomplete params' do
+        attributes = [
+          { uri: "/example?word" },
+          { uri: "/example?word=" }
+        ]
+
+        attributes.each do |attrs|
+          expect(filtered_uri(attrs)).to eq attrs[:uri]
+        end
+      end
+
       context 'with filter_parameters as symbols' do
         it 'filters the uri for entire matches of the word' do
           expect(filtered_uri(attributes)).to eq "/example?personally_identifiable_info=[FILTERED]"

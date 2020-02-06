@@ -60,7 +60,7 @@ module Jimmy
         uri = URI.parse(attributes[:uri])
         return attributes unless uri.query
 
-        query_params = CGI.parse(uri.query)
+        query_params = Rack::Utils.parse_nested_query(uri.query)
         filtered_query_params = parameter_filter.filter(query_params)
 
         attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
