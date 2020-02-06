@@ -62,16 +62,15 @@ module Jimmy
 
         query_params = CGI.parse(uri.query)
         filtered_query_params = parameter_filter.filter(query_params)
+
         attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
 
         attributes
       end
 
       def build_filtered_request_uri(uri, query_params)
-        URI::HTTP.build(
-          path: uri.path,
-          query: CGI.unescape(URI.encode_www_form(query_params))
-        ).request_uri
+        uri.query = CGI.unescape(URI.encode_www_form(query_params))
+        uri.to_s
       end
 
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/

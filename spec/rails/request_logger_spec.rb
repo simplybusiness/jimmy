@@ -103,6 +103,13 @@ describe Jimmy::Rails::RequestLogger do
         expect(filtered_uri(attributes)).to eq "/example"
       end
 
+      # we get these when we use url prefixes
+      it 'can handle uris without an absolute path' do
+        attributes = { uri: "example?word=floof" }
+
+        expect(filtered_uri(attributes)).to eq "example?word=floof"
+      end
+
       context 'with filter_parameters as symbols' do
         it 'filters the uri for entire matches of the word' do
           expect(filtered_uri(attributes)).to eq "/example?personally_identifiable_info=[FILTERED]"
