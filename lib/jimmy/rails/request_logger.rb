@@ -38,22 +38,30 @@ module Jimmy
       end
 
       def filter_attributes(attributes)
-        klass = defined?(ActiveSupport::ParameterFilter) ?
-          ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
-        @filter ||= klass.new(::Rails.application.config.filter_parameters)
-        key_filtererd_attributes = @filter.filter attributes
-        return key_filtererd_attributes unless Jimmy.configuration.filter_uri
-        filter_uri_query(key_filtererd_attributes)
+        filtered_attributes = parameter_filter.filter(attributes)
+        return filtered_attributes unless Jimmy.configuration.filter_uri
+
+        filter_uri_query(filtered_attributes)
       end
 
       private
+
+      def parameter_filter
+        @parameter_filter ||=
+          parameter_filter_klass.new(::Rails.application.config.filter_parameters)
+      end
+
+      def parameter_filter_klass
+        defined?(ActiveSupport::ParameterFilter) ?
+          ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
+      end
 
       def filter_uri_query(attributes)
         uri = URI.parse(attributes[:uri])
         return attributes unless uri.query
 
         query_params = CGI.parse(uri.query)
-        filtered_query_params = @filter.filter query_params
+        filtered_query_params = parameter_filter.filter(query_params)
         attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
 
         attributes
