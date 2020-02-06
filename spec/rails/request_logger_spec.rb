@@ -70,13 +70,15 @@ describe Jimmy::Rails::RequestLogger do
     }
 
     context "without filter_uri configuration" do
-      it 'filters the attributes' do
+      it 'filters the attributes except uri' do
         filter_params = [:personally_identifiable_info]
         setup_rails_filter_params(filter_params)
         filtered_attributes = filter_attributes(attributes)
 
-        expect(filtered_attributes[:query_params]).
-          to eq({ personally_identifiable_info: "[FILTERED]" })
+        expect(filtered_attributes).to eq({
+          uri: "/example?personally_identifiable_info=private_email@example.com",
+          query_params: { personally_identifiable_info: "[FILTERED]" }
+        })
       end
     end
 
@@ -90,7 +92,7 @@ describe Jimmy::Rails::RequestLogger do
         setup_rails_filter_params(filter_params)
       end
 
-      it 'filters the attributes' do
+      it 'filters the non-uri attributes' do
         filtered_attributes = filter_attributes(attributes)
 
         expect(filtered_attributes[:query_params]).
