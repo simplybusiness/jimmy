@@ -38,29 +38,39 @@ module Jimmy
       end
 
       def filter_attributes(attributes)
-        klass = defined?(ActiveSupport::ParameterFilter) ?
-          ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
-        @filter ||= klass.new(::Rails.application.config.filter_parameters)
-        key_filtererd_attributes = @filter.filter attributes
-        return key_filtererd_attributes unless Jimmy.configuration.filter_uri
-        filter_uri_query(key_filtererd_attributes)
+        filtered_attributes = parameter_filter.filter(attributes)
+        return filtered_attributes unless Jimmy.configuration.filter_uri
+
+        filter_uri_query(filtered_attributes)
       end
 
       private
 
-      def filter_uri_query(attributes)
-        ::Rails.application.config.filter_parameters.each do |matcher|
-          matcher = matcher.source[1...-1] if matcher_is_a_contained_regex?(matcher)
+      def parameter_filter
+        @parameter_filter ||=
+          parameter_filter_klass.new(::Rails.application.config.filter_parameters)
+      end
 
-          attributes[:uri].gsub!(Regexp.new(matcher.to_s + '[^&]+'), "#{matcher}=[FILTERED]")
-        end
+      def parameter_filter_klass
+        defined?(ActiveSupport::ParameterFilter) ?
+          ActiveSupport::ParameterFilter : ActionDispatch::Http::ParameterFilter
+      end
+
+      def filter_uri_query(attributes)
+        uri = URI.parse(attributes[:uri])
+        return attributes unless uri.query
+
+        query_params = Rack::Utils.parse_nested_query(uri.query)
+        filtered_query_params = parameter_filter.filter(query_params)
+
+        attributes[:uri] = build_filtered_request_uri(uri, filtered_query_params)
+
         attributes
       end
 
-      def matcher_is_a_contained_regex?(matcher)
-        return false unless matcher.is_a? Regexp
-
-        (/^\^.*\$$/).match? matcher.source
+      def build_filtered_request_uri(uri, query_params)
+        uri.query = CGI.unescape(URI.encode_www_form(query_params))
+        uri.to_s
       end
 
       # See: http://coderrr.wordpress.com/2008/05/28/get-your-local-ip-address/
