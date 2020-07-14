@@ -20,7 +20,7 @@ module Jimmy
     attr_reader :stream
 
     def try_write(entry)
-        stream.write(entry)
+      stream.write(entry)
     end
 
     def log_line_from(entry)
