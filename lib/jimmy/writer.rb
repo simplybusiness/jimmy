@@ -20,11 +20,7 @@ module Jimmy
     attr_reader :stream
 
     def try_write(entry)
-      if stream.respond_to?(:syswrite)
-        stream.syswrite(entry)
-      else
-        stream.write(entry)
-      end
+      stream.write(entry)
     end
 
     def log_line_from(entry)
