@@ -20,7 +20,7 @@ blocks:
   - name: Semaphore v2 tests
     dependencies: []
     execution_time_limit:
-      minutes: 30
+      minutes: 5
     task:
       jobs:
         - name: Tests
