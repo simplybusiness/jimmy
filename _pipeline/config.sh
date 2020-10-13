@@ -3,4 +3,4 @@
 # ------------------------------------------------------------------------------
 # Semaphore settings
 # ------------------------------------------------------------------------------
-export APP_SEMAPHORE_ID='1a50e5b7-f96e-4fbe-a7de-7da6feaaeec4'
+export SEMAPHORE_V2_PROJECT_ID='bc3b463b-88fe-4ee1-b6f7-63a6ed18d88c'
