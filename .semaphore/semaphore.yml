@@ -1,0 +1,31 @@
+version: v1.0
+name: Semaphore v2 tests
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+auto_cancel:
+  running:
+    when: branch != 'master'
+global_job_config:
+  prologue:
+    commands:
+      - checkout
+      - cache restore bundle-$RUBY_VERSION-$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_WORKFLOW_ID,bundle-$SEMAPHORE_GIT_BRANCH,bundle-master
+      - sem-version ruby $RUBY_VERSION -f
+      - bundle install --path vendor/bundle
+      - bundle clean --force
+      - cache store bundle-$RUBY_VERSION-$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_WORKFLOW_ID vendor/bundle
+blocks:
+  - name: Semaphore v2 tests
+    dependencies: []
+    execution_time_limit:
+      minutes: 30
+    task:
+      jobs:
+        - name: Tests
+          matrix:
+            - env_var: RUBY_VERSION
+              values: [2.6.5, 2.7.1]
+          commands:
+            - bundle exec rspec
