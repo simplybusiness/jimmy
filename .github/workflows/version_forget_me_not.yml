@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - uses: simplybusiness/version-forget-me-not@v1
+      - uses: simplybusiness/version-forget-me-not@v2
         env:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION_FILE_PATH: "lib/jimmy/version.rb"
