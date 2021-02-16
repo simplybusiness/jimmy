@@ -164,3 +164,6 @@ Jimmy::Ruby:Logger.instance.log({message: "Error message"})
 ## Copyright
 
 Copyright © 2016-2017 Simply Business. See LICENSE for details.
+
+
+
