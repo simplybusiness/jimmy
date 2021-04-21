@@ -11,7 +11,7 @@ global_job_config:
   prologue:
     commands:
       - checkout
-      - cache restore bundle-$RUBY_VERSION-$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_WORKFLOW_ID,bundle-$SEMAPHORE_GIT_BRANCH,bundle-master
+      - cache restore bundle-$RUBY_VERSION-$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_WORKFLOW_ID,bundle-$RUBY_VERSION-$SEMAPHORE_GIT_BRANCH,bundle-$RUBY_VERSION-master
       - sem-version ruby $RUBY_VERSION -f
       - bundle install --path vendor/bundle
       - bundle clean --force
@@ -26,6 +26,6 @@ blocks:
         - name: Tests
           matrix:
             - env_var: RUBY_VERSION
-              values: [2.6.5, 2.7.1]
+              values: ["2.6.5", "2.7", "3.0"]
           commands:
             - bundle exec rspec
